@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_home"
+    app:startDestination="@id/newsListFragment">
+
+    <fragment
+        android:id="@+id/newsListFragment"
+        android:name="com.mert.stajprojexml.ui.news.NewsListFragment"
+        android:label="News" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.mert.stajprojexml.ui.favs.FavoritesFragment"
+        android:label="Favorites" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.mert.stajprojexml.ui.profile.ProfileFragment"
+        android:label="Profile" />
+
+
+</navigation>
