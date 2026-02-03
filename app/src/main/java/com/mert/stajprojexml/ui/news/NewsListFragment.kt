@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +20,10 @@ import kotlinx.coroutines.launch
 
 class NewsListFragment : Fragment(R.layout.fragment_news_list) {
 
+    private val api by lazy { ApiClient.createNewsApi() }
+    private val repo by lazy { NewsRepository(api) }
+    private val vm: NewsViewModel by viewModels { NewsViewModelFactory(repo) }
+    
     private lateinit var adapter: NewsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,7 +32,14 @@ class NewsListFragment : Fragment(R.layout.fragment_news_list) {
 
 
         adapter = NewsAdapter { article ->
-            // TODO:
+            val bundle = bundleOf(
+                "title" to (article.title ?: ""),
+                "desc" to (article.description ?: ""),
+                "content" to (article.content ?: ""),
+                "imageUrl" to article.urlToImage,
+                "url" to article.url
+            )
+            findNavController().navigate(R.id.newsDetailFragment, bundle)
         }
 
         recycler.adapter = adapter
@@ -40,9 +54,6 @@ class NewsListFragment : Fragment(R.layout.fragment_news_list) {
                 Toast.makeText(requireContext(), error.error.message ?: "Load error", Toast.LENGTH_SHORT).show()
             }
         }
-        val api = ApiClient.createNewsApi()
-        val repo = NewsRepository(api)
-        val vm = NewsViewModel(repo)
 
         viewLifecycleOwner.lifecycleScope.launch {
             vm.news.collectLatest { pagingData ->

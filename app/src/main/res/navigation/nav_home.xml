@@ -19,5 +19,15 @@
         android:name="com.mert.stajprojexml.ui.profile.ProfileFragment"
         android:label="Profile" />
 
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.mert.stajprojexml.ui.profile.LoginFragment"
+        android:label="Login" />
+
+    <fragment
+        android:id="@+id/newsDetailFragment"
+        android:name="com.mert.stajprojexml.ui.news.NewsDetailFragment"
+        android:label="Detail" />
+
 
 </navigation>

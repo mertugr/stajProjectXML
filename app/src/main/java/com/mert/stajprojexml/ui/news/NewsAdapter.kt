@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.mert.stajprojexml.data.remote.dto.ArticleDto
 import com.mert.stajprojexml.databinding.ItemArticleBinding
+import coil.load
 
 class NewsAdapter(
     private val onClick: (ArticleDto) -> Unit
@@ -32,6 +33,11 @@ class NewsAdapter(
         fun bind(item: ArticleDto) {
             binding.title.text = item.title ?: "(no title)"
             binding.desc.text = item.description ?: ""
+            binding.thumb.load(item.urlToImage) {
+                crossfade(true)
+                placeholder(android.R.color.darker_gray)
+                error(android.R.color.darker_gray)
+            }
             binding.root.setOnClickListener { onClick(item) }
         }
     }
