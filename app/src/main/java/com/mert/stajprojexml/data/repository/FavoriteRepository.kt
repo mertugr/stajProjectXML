@@ -19,11 +19,4 @@ class FavoriteRepository(context: Context) {
     suspend fun add(article: FavoriteArticle) = dao.insert(article.copy(userId = userId()))
 
     suspend fun remove(url: String) = dao.deleteByUrl(userId(), url)
-
-    suspend fun migrateGuestFavoritesTo(userId: String) {
-        val guestId = SessionManager.GUEST_ID
-        if (guestId == userId) return
-        val guestFavs = dao.getList(guestId)
-        guestFavs.forEach { dao.insert(it.copy(userId = userId)) }
-    }
 }

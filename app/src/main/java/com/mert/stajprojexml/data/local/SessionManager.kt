@@ -15,7 +15,8 @@ class SessionManager(context: Context) {
     fun isGuest(): Boolean = currentUserId() == GUEST_ID
 
     companion object {
-        const val GUEST_ID = "guest"
+        // guest treated like a pseudo-email so it fits userId/email displays
+        const val GUEST_ID = "guest@gmail.com"
         private const val KEY_USER_ID = "current_user_id"
     }
 }

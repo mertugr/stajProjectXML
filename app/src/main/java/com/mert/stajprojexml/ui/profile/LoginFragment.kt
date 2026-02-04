@@ -10,7 +10,6 @@ import com.mert.stajprojexml.R
 import com.mert.stajprojexml.data.local.AppDatabase
 import com.mert.stajprojexml.data.local.SessionManager
 import com.mert.stajprojexml.data.local.UserEntity
-import com.mert.stajprojexml.data.repository.FavoriteRepository
 import com.mert.stajprojexml.databinding.FragmentLoginBinding
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -24,7 +23,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         val session = SessionManager(requireContext())
         val db = AppDatabase.get(requireContext())
-        val favRepo = FavoriteRepository(requireContext())
 
         b.loginButton.setOnClickListener {
             val name = b.nameInput.text?.toString()?.trim().orEmpty()
@@ -43,7 +41,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         email = email
                     )
                 )
-                favRepo.migrateGuestFavoritesTo(userId)
                 session.setCurrentUserId(userId)
                 Toast.makeText(requireContext(), "Giriş yapıldı", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()

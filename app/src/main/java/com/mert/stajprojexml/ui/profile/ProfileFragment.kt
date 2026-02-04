@@ -13,36 +13,14 @@ import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment(R.layout.fragment_profile){
     private var binding: FragmentProfileBinding? = null
+    private lateinit var session: SessionManager
+    private lateinit var db: AppDatabase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val b = FragmentProfileBinding.bind(view)
         binding = b
-        val session = SessionManager(requireContext())
-        val db = AppDatabase.get(requireContext())
-
-        fun renderGuest() {
-            b.guestGroup.visibility = View.VISIBLE
-            b.userGroup.visibility = View.GONE
-        }
-
-        fun renderUser(name: String?, email: String?) {
-            b.guestGroup.visibility = View.GONE
-            b.userGroup.visibility = View.VISIBLE
-            b.userName.text = name ?: "Kullanıcı"
-            b.userEmail.text = email ?: ""
-        }
-
-        fun loadState() {
-            val current = session.currentUserId()
-            if (session.isGuest()) {
-                renderGuest()
-            } else {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    val user = db.userDao().findById(current)
-                    renderUser(user?.name, user?.email ?: current)
-                }
-            }
-        }
+        session = SessionManager(requireContext())
+        db = AppDatabase.get(requireContext())
 
         b.loginButton.setOnClickListener {
             findNavController().navigate(R.id.loginFragment)
@@ -54,6 +32,46 @@ class ProfileFragment : Fragment(R.layout.fragment_profile){
         }
 
         loadState()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadState() // refresh after returning from login
+    }
+
+    private fun renderGuest() {
+        binding?.apply {
+            guestGroup.visibility = View.VISIBLE
+            userGroup.visibility = View.GONE
+        }
+    }
+
+    private fun renderUser(name: String?, email: String?) {
+        binding?.apply {
+            guestGroup.visibility = View.GONE
+            userGroup.visibility = View.VISIBLE
+            userName.text = name ?: "Kullanıcı"
+            userEmail.text = email ?: ""
+        }
+    }
+
+    private fun loadState() {
+        val current = session.currentUserId()
+        if (session.isGuest()) {
+            renderGuest()
+            return
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val user = db.userDao().findById(current)
+            if (user == null) {
+                // stale user id; fallback to guest
+                session.setCurrentUserId(SessionManager.GUEST_ID)
+                renderGuest()
+            } else {
+                renderUser(user.name, user.email ?: current)
+            }
+        }
     }
 
     override fun onDestroyView() {
